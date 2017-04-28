@@ -2,44 +2,44 @@ import numpy as np
 
 
 
-def matrix_factorization(Rating, User, Items, K, steps, alpha, beta):
+def matrix_factorization(rating, user, items, K, steps, alpha, beta):
 	"""
-	Input : Rating matrix, User Matrix, Items matrix, K number of features, number of iteration, learning rates
+	Input : rating matrix, user Matrix, items matrix, K number of features, number of iteration, learning rates
 	Output : Recommendation matrix
-	function : use an gradient descent algorithm to optimize User's value
+	function : use an gradient descent algorithm to optimize user's value
 	"""
-	Items = np.transpose(Items)
+	items = np.transpose(items)
 	for step in range(steps):
-		for iRow in range(np.shape(User)[0]):
-			for iCol in range(np.shape(Items)[1]):
-				if Rating[iRow][iCol] > 0:
-					eij = Rating[iRow][iCol] - np.dot(User[iRow,:],Items[:,iCol])
+		for iRow in range(np.shape(user)[0]):
+			for iCol in range(np.shape(items)[1]):
+				if rating[iRow][iCol] > 0:
+					eij = rating[iRow][iCol] - np.dot(user[iRow,:],items[:,iCol])
 					for k in range(K):
-						User[iRow][k] = User[iRow][k] + alpha * (2 * eij * Items[k][iCol] - beta * User[iRow][k])
+						user[iRow][k] = user[iRow][k] + alpha * (2 * eij * items[k][iCol] - beta * user[iRow][k])
 
 		e = 0
-		for iRow in range(np.shape(User)[0]):
-			for iCol in range(np.shape(Items)[1]):
-				if Rating[iRow][iCol] > 0:
-					e = e + pow(Rating[iRow][iCol] - np.dot(User[iRow,:],Items[:,iCol]), 2)
+		for iRow in range(np.shape(user)[0]):
+			for iCol in range(np.shape(items)[1]):
+				if rating[iRow][iCol] > 0:
+					e = e + pow(rating[iRow][iCol] - np.dot(user[iRow,:],items[:,iCol]), 2)
 					for k in range(K):
-						e = e + (beta/2) * ( pow(User[iRow][k],2) + pow(Items[k][iCol],2) )
+						e = e + (beta/2) * ( pow(user[iRow][k],2) + pow(items[k][iCol],2) )
 		if e < 0.001:
 			break
-	newR = np.dot(User, Items)
+	newR = np.dot(user, items)
 	return newR
 
-def Recommendation(Rating, UserNumber):
+def recommendation(rating, userNumber):
 	"""
-	Input : Rating matrix, UserNumber
+	Input : rating matrix, userNumber
 	Output : array list of items
 	function : find the next item to recommend
 	"""
-	nextItem = [ 0 for i in range(len(Rating[:,UserNumber]))]
-	userRate = [ 0 for i in range(len(Rating[:,UserNumber]))]
-	userRate = Rating[:,UserNumber]
+	nextItem = [ 0 for i in range(len(rating[userNumber]))]
+	userRate = [ 0 for i in range(len(rating[userNumber]))]
+	userRate = rating[userNumber]
 	#print(userRate)
-	for i in range(len(Rating[:,UserNumber])):
+	for i in range(len(rating[userNumber])):
 		nextItem[i] = np.argmax(userRate) + 1
 		userRate[nextItem[i] - 1] = -10000000
 
@@ -51,7 +51,7 @@ def Recommendation(Rating, UserNumber):
 ###############################################################################
 
 if __name__ == "__main__":
-	Rating = [
+	rating = [
 		[9,7,0,2],
 		[4,0,0,4],
 		[0,6,2,8],
@@ -59,27 +59,27 @@ if __name__ == "__main__":
 		[0,1,2,5],
 		 ]
 
-	Rating = np.array(Rating)
+	rating = np.array(rating)
 
-	K = 9
+	k = 9
 	steps=5000
 	alpha=0.0002
 	beta=0.02
 
-	User = np.random.rand(len(Rating),K)
-	Items = [[1,1,1,0,0,0,0,0,0],
+	user = np.random.rand(len(rating),k)
+	items = [[1,1,1,0,0,0,0,0,0],
 		[1,0,0,1,0,0,0,1,0],
 		[0,1,0,1,0,1,0,1,1],
 		[0,0,0,1,0,1,1,1,0]
 		]
-	print(Rating)
+	print(rating)
 
 	#Matrix of Recommendation
-	Rating = matrix_factorization(Rating, User, Items, K, steps, alpha, beta)
-	print(Rating)
+	rating = matrix_factorization(rating, user, items, k, steps, alpha, beta)
+	print(rating)
 
 	#Recommendation for users
 	print("Choose a user : ")
 	numb = int(input())
 	print("This is the list of Recommendation : ")
-	print(Recommendation(Rating, numb))
+	print(recommendation(rating, numb))
