@@ -12,7 +12,8 @@ def tf_idf(user, itemSelected, item, numberAliment):
 		for idItem in itemSelected:
 			if idItem[idAliment] == 1:
 				freq += 1
-		user[idAliment] = float(freq/len(itemSelected))
+		if len(itemSelected) > 0:
+			user[idAliment] = float(freq/len(itemSelected))
 
 	for idAliment in range(numberAliment):
 		freq = 0
@@ -46,8 +47,10 @@ def recommandation(user, item):
 if __name__ == '__main__':
 
 #####Data set
-	item = np.random.randint(2, size=(10, 4)) #10 plats avec 4 aliments différents (on peut retrouver les mêmes plats)
-	user = np.random.rand(4)
+
+	numberAliment = 4
+	item = np.random.randint(2, size=(10, numberAliment)) #10 plats avec 4 aliments différents (on peut retrouver les mêmes plats)
+	user = [0 for i in range(numberAliment)]
 	itemSelected = []
 	recommend = []
 	wish = 0
@@ -57,6 +60,9 @@ if __name__ == '__main__':
 		wish = int(input())
 		if wish == 1 :
 			itemSelected.append(item[i])
-	user = tf_idf(user, itemSelected, item, 4)
+
+####Recommendation
+
+	user = tf_idf(user, itemSelected, item, numberAliment)
 	recommend = recommandation(user, item)
 	print(recommend)
