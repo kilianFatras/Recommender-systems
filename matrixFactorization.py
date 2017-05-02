@@ -8,7 +8,6 @@ def matrix_factorization(rating, user, items, K, steps, alpha, beta):
 	Output : Recommendation matrix
 	function : use an gradient descent algorithm to optimize user's value
 	"""
-	items = np.transpose(items)
 	for step in range(steps):
 		for iRow in range(np.shape(user)[0]):
 			for iCol in range(np.shape(items)[1]):
@@ -16,6 +15,7 @@ def matrix_factorization(rating, user, items, K, steps, alpha, beta):
 					eij = rating[iRow][iCol] - np.dot(user[iRow,:],items[:,iCol])
 					for k in range(K):
 						user[iRow][k] = user[iRow][k] + alpha * (2 * eij * items[k][iCol] - beta * user[iRow][k])
+						items[k][iCol] = items[k][iCol] + alpha * (2 * eij * user[iRow][k] - beta * items[k][iCol])
 
 		e = 0
 		for iRow in range(np.shape(user)[0]):
@@ -67,11 +67,8 @@ if __name__ == "__main__":
 	beta=0.02
 
 	user = np.random.rand(len(rating),k)
-	items = [[1,1,1,0,0,0,0,0,0],
-		[1,0,0,1,0,0,0,1,0],
-		[0,1,0,1,0,1,0,1,1],
-		[0,0,0,1,0,1,1,1,0]
-		]
+	items = np.random.rand(len(rating[0]),k)
+	items = np.transpose(items)
 	print(rating)
 
 	#Matrix of Recommendation
