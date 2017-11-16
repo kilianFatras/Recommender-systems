@@ -1,2 +1,2 @@
 # Recommender-systems
-Famous recommender systems algorithm.
+Famous recommender system algorithms.
